@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portafolio | Toni Pavón</title>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Helvetica', 'Arial', sans-serif;
+    }
+
+    body {
+      background-color: #000;
+      color: #fff;
+      line-height: 1.6;
+      cursor: url('imagenes/cursor.cur'), auto;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: clip-path 1.5s ease-out, opacity 1.5s ease-out;
+      clip-path: circle(100% at center);
+    }
+
+    #loader.fade-out {
+      clip-path: circle(0% at center);
+      opacity: 0;
+    }
+
+    .loader-circle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 8px solid #e5c100;
+      border-top: 8px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: #E5C100;
+      font-size: 2rem;
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 2px;
+      animation: flicker 1.5s infinite alternate;
+    }
+
+    .dots::after {
+      content: '';
+      animation: dots 1.5s steps(5, end) infinite;
+    }
+
+    @keyframes flicker {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; transform: scale(1.02); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60% { content: '...'; }
+      80%, 100% { content: ''; }
+    }
+
+    #main-content {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #main-content.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    header {
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    header h1 {
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-weight: 600;
+    }
+
+    .about, .hero {
+      padding: 2rem 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .about h2, .hero h2 {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      margin-bottom: 1rem;
+    }
+
+    .about p, .hero p {
+      font-size: clamp(1rem, 3vw, 1.1rem);
+    }
+
+    .foto-hero {
+      width: 120px;
+      height: 120px; 
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+      margin: 0 auto 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.9);
+    }
+
+    .descarga-cv {
+      text-align: center;
+      margin: 2rem auto;
+    }
+
+    .boton-cv {
+      background-color: #e44d26;
+      color: white;
+      padding: 0.8rem 1.8rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      text-decoration: none;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .boton-cv:hover {
+      background-color: #d13e1f;
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .skills {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      margin: 2rem auto;
+      max-width: 900px;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .skills h2 {
+      font-size: clamp(1.3rem, 4vw, 1.8rem);
+      margin-bottom: 1.5rem;
+      color: #333;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .skills-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    .skill-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 100px;
+    }
+
+    .skill-item img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    .skill-item img:hover {
+      transform: scale(1.1);
+    }
+
+    .skills .skill-item h3 {
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.5s ease;
+    }
+
+    body[style*="background-color: rgb(26, 26, 26)"] .skills .skill-item h3{
+        background-color: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+    
+    .skill-item p {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .logo-html {
+      box-shadow: 0 8px 16px rgba(227, 76, 38, 0.5);
+    }
+
+    #html {
+      color: #fff;
+      text-shadow: 2px 2px 5px #E22C2666;
+    }
+
+    .logo-css {
+      box-shadow: 0 8px 16px rgba(38, 77, 228, 0.5);
+    }
+
+    #css3 {
+      color: #fff;
+      text-shadow: 2px 2px 5px #264DE480;
+    }
+
+    .logo-js {
+      box-shadow: 0 8px 16px rgba(240, 219, 79, 0.5);
+    }
+
+    #js {
+      color: #fff;
+      text-shadow: 2px 2px 5px #F09B0080;
+    }
+
+    .carrusel {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      touch-action: pan-y;
+      margin: 2rem 0;
+    }
+
+    .carrusel-track {
+      display: flex;
+      width: max-content;
+      animation: scroll 60s linear infinite;
+    }
+
+    .carrusel-item {
+      min-width: 100vw;
+      flex-shrink: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .carrusel-item img {
+      width: 90%;
+      max-width: 800px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      transition: transform 0.4s ease-in-out;
+    }
+
+    .carrusel:hover .carrusel-track {
+      animation-play-state: paused;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    footer {
+      width: 100%;
+      background-color: #1a1a1a;
+      color: #fff;
+      transition: all 0.3s ease;
+      padding: 30px 15px; 
+      font-size: 0.9rem;
+      position: relative;
+      min-height: 120px;
+    }
+
+    .footer-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      padding: 0 15px 0 70px;
+    }
+
+    .color-slider-container {
+      position: absolute;
+      left: 10px; 
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: #333;
+      padding: 0.6rem 1rem 0.6rem 0.8rem;
+      border-radius: 0 25px 25px 0;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+      z-index: 2;
+      width: auto;
+    }
+
+    .color-slider-container input[type="range"] {
+      width: 120px;
+      max-width: 100%;
+    }
+
+    .footer-text {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.8rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    .footer-text a {
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: color 0.3s ease;
+    }
+
+    footer a {
+      color: inherit;
+      transition: color 0.3s ease;
+    }
+
+    footer .footer-text a:hover {
+      color: #E5C100 !important;
+      text-decoration: underline !important;
+      transition: color 0.3s ease;
+      font-size: 20px;
+    }
+
+    body[style*="background-color: rgb(255, 255, 255)"] footer,
+    body[style*="background-color: rgb(254, 254, 254)"] footer,
+    body[style*="background-color: rgb(253, 253, 253)"] footer {
+      color: #333;
+    }
+
+    body[style*="background-color: rgb(255, 255, 255)"] footer img,
+    body[style*="background-color: rgb(254, 254, 254)"] footer img,
+    body[style*="background-color: rgb(253, 253, 253)"] footer img {
+      filter: invert(0);
+    } 
+
+    .footer-text img {
+      filter: invert(1);
+      width: 18px;
+      height: 18px;
+    }
+
+    .whatsapp-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+      background-color: #25d366;
+      border-radius: 50%;
+      padding: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .whatsapp-button img {
+      width: 36px;
+      height: 36px;
+    }
+
+    .whatsapp-button:hover {
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+      footer {
+        padding-left: 60px; 
+        gap: 1rem;
+      }
+      
+      .color-slider-container {
+        left: 5px;
+        padding: 0.5rem 0.6rem;
+      }
+      
+      .color-slider-container input[type="range"] {
+        width: 100px;
+      }
+      .footer-text {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+
+    @media (min-width: 600px) {
+      .footer-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .skills-container {
+        gap: 2rem;
+      }
+      
+      .skill-item img {
+        width: 100px;
+        height: 100px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      footer {
+        padding: 25px 10px 25px 55px;
+      }
+    
+      .footer-container {
+        padding-left: 50px;
+      }
+    
+      .color-slider-container {
+        left: 2px;
+        padding: 0.4rem 0.5rem;
+      }
+    
+      .color-slider-container input[type="range"] {
+        width: 80px;
+      }
+    
+      .footer-text a {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loader">
+    <div class="loader-circle">
+      <div class="spinner"></div>
+      <span class="loading-text">Cargando<span class="dots"></span></span>
+    </div>
+  </div>
+
+  <div id="main-content">
+    <section class="hero">
+      <img src="imagenes/foto.jpeg" alt="Foto de Toni Pavón" class="foto-hero">
+    </section>
+
+    <header>
+      <h1>Antonio Pavón Díaz</h1>
+    </header>
+
+    <section class="hero">
+      <h2>Diseñador UX/UI · Frontend Developer</h2>
+      <p>Especializado en diseño limpio, soluciones digitales funcionales y enfoque centrado en el usuario.</p>
+    </section>
+
+    <section class="about" data-aos="fade-up" data-aos-duration="1000">
+      <h2>Sobre mí</h2>
+      <p>
+        Profesional con más de 30 años de experiencia en liderazgo y gestión. Redirigiendo mi carrera hacia el desarrollo web, especializado en frontend, UX/UI e inteligencia artificial. Motivado para seguir aprendiendo y aportar soluciones tecnológicas innovadoras.
+      </p>
+    </section>
+
+    <div class="descarga-cv" data-aos="fade-up" data-aos-duration="1000">
+      <a href="imagenes/cv.pdf" target="_blank" class="boton-cv">Descargar CV</a>
+    </div>
+
+    <article class="skills" data-aos="fade-up" data-aos-duration="1000">
+      <h2>Tecnologías que uso</h2>
+      <div class="skills-container">
+        <div class="skill-item" data-aos="zoom-in" data-aos-delay="200">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/61/HTML5_logo_and_wordmark.svg" alt="HTML5 Logo" class="logo-html">
+          <h3 id="html">HTML5</h3>
+        </div>
+        <div class="skill-item" data-aos="zoom-in" data-aos-delay="300">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/d/d5/CSS3_logo_and_wordmark.svg" alt="CSS3 Logo" class="logo-css">
+          <h3 id="css3">CSS3</h3>
+        </div>
+        <div class="skill-item" data-aos="zoom-in" data-aos-delay="400">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Unofficial_JavaScript_logo_2.svg" alt="JS Logo" class="logo-js">
+          <h3 id="js">JavaScript</h3>
+        </div>
+      </div>
+    </article>
+
+    <section class="carrusel" id="carrusel">
+      <div class="carrusel-track">
+        <div class="carrusel-item">
+          <img src="imagenes/marketing.jpg" alt="Certificado Marketing">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/marketing_2.jpg" alt="Certificado Marketing">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/ux_ui.jpg" alt="Certificado UX/UI">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/ux_ui_2.jpg" alt="Certificado UX/UI">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/figma.jpg" alt="Certificado Figma">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/git_github.jpg" alt="Certificado Git y Github">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/excel.jpg" alt="Certificado Excel">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/GoogleIA.jpg" alt="Certificado Google en Inteligencia Artificial">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/ia_generativa.jpg" alt="Certificado IA Generativa">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/copilot.jpg" alt="Certificado IA Copilot">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/e_commerce.jpg" alt="Certificado E-Commerce">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/css_avanzado.jpg" alt="Certificado CSS Avanzado">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/animaciones.jpg" alt="Certificado CSS Animaciones">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/wordPress.jpg" alt="Certificado WordPress">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/frontend.jpg" alt="Certificado Frontend">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/ciber.jpg" alt="Certificado Ciber Seguridad">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/posicionamiento_web.jpg" alt="Certificado Posicionamiento Web">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/marketing.jpg" alt="Certificado Marketing">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/marketing_2.jpg" alt="Certificado Marketing">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/ux_ui.jpg" alt="Certificado UX/UI">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/ux_ui_2.jpg" alt="Certificado UX/UI">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/figma.jpg" alt="Certificado Figma">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/git_github.jpg" alt="Certificado Git y Github">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/excel.jpg" alt="Certificado Excel">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/GoogleIA.jpg" alt="Certificado Google en Inteligencia Artificial">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/ia_generativa.jpg" alt="Certificado IA Generativa">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/copilot.jpg" alt="Certificado IA Copilot">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/e_commerce.jpg" alt="Certificado E-Commerce">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/css_avanzado.jpg" alt="Certificado CSS Avanzado">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/animaciones.jpg" alt="Certificado CSS Animaciones">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/wordPress.jpg" alt="Certificado WordPress">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/frontend.jpg" alt="Certificado Frontend">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/ciber.jpg" alt="Certificado Ciber Seguridad">
+        </div>
+        <div class="carrusel-item">
+          <img src="imagenes/posicionamiento_web.jpg" alt="Certificado Posicionamiento Web">
+        </div>
+      </div>
+    </section>
+      
+    <footer>
+      <div class="footer-container">
+        <div class="color-slider-container">
+          <label for="colorSlider" title="Cambia el color 🎨">🎨</label>
+          <input type="range" id="colorSlider" min="0" max="100" value="0" />
+        </div>
+
+        <div class="footer-text">
+          © 2025 Toni Pavón · 
+          <a href="https://linkedin.com/in/toni-pavón-díaz-94bb3b328" target="_blank" aria-label="LinkedIn">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" alt="LinkedIn">
+            <span>LinkedIn</span>
+          </a> · 
+          <a href="https://github.com/Antonio-P-D" target="_blank" aria-label="GitHub">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub">
+            <span>GitHub</span>
+          </a> · 
+          <a href="mailto:tonipavon3@gmail.com" aria-label="Email">
+            <span>✉️ Email</span>
+          </a>
+        </div>
+      </div>
+
+      <a href="https://wa.me/67092049" class="whatsapp-button" target="_blank" aria-label="WhatsApp">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+      </a>
+    </footer>
+  </div>
+
+  <script>
+
+    AOS.init();
+
+    const carrusel = document.getElementById("carrusel");
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    carrusel.addEventListener("touchstart", (e) => {
+      isDown = true;
+      startX = e.touches[0].pageX;
+      scrollLeft = carrusel.scrollLeft;
+    });
+
+    carrusel.addEventListener("touchmove", (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.touches[0].pageX;
+      const walk = (startX - x) * 1.5;
+      carrusel.scrollLeft = scrollLeft + walk;
+    });
+
+    carrusel.addEventListener("touchend", () => {
+      isDown = false;
+    });
+
+    const colorSlider = document.getElementById('colorSlider');
+    
+    function updateColors() {
+      const value = parseInt(colorSlider.value);
+
+      const bgStart = [26, 26, 26];
+      const bgEnd = [255, 255, 255];
+      const textStart = [255, 255, 255];
+      const textEnd = [0, 0, 0];
+
+      function interpolate(start, end, percent) {
+        return start.map((startVal, i) =>
+          Math.round(startVal + (end[i] - startVal) * (percent / 100))
+        );
+      }
+
+      const bgColor = interpolate(bgStart, bgEnd, value);
+      const textColor = interpolate(textStart, textEnd, value);
+      const rgbBg = `rgb(${bgColor.join(',')})`;
+      const rgbText = `rgb(${textColor.join(',')})`;
+
+      document.body.style.backgroundColor = rgbBg;
+      document.body.style.color = rgbText;
+
+      document.querySelectorAll(
+        'a:not(footer a), h1, h2, h3, p, span, li, .about p, .hero p, .skill-item h3'
+      ).forEach(el => {
+        el.style.color = rgbText;
+      });
+
+      const footer = document.querySelector('footer');
+      if (footer) {
+        footer.style.backgroundColor = rgbBg;
+      }
+
+      document.querySelectorAll('.skill-item p').forEach(p => {
+        p.style.color = value > 70 ? '#333' : '#666';
+      });
+    }
+
+    colorSlider.addEventListener('input', updateColors);
+    colorSlider.addEventListener('change', updateColors);
+
+    window.addEventListener("load", function() {
+      const loader = document.getElementById("loader");
+      const mainContent = document.getElementById("main-content");
+      const whooshSound = document.getElementById("whooshSound");
+      
+      setTimeout(() => {
+        loader.classList.add("fade-out");
+        
+      setTimeout(() => {
+        mainContent.classList.add("show");
+        }, 50);
+      }, 2000); 
+    });
+  </script>
+</body>
+</html>
