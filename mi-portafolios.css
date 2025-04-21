@@ -28,6 +28,7 @@
     #loader.fade-out {
       clip-path: circle(0% at center);
       opacity: 0;
+      transition: clip-path 1.5s ease-out, opacity 2.5s ease-out, z-index 0s linear 1.5s;
     }
 
     .loader-circle {
@@ -148,6 +149,7 @@
       background-color: #d13e1f;
       transform: scale(1.05);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      transition: all 0.5s ease-in-out;
     }
 
     .skills {
